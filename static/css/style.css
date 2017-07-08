@@ -1,0 +1,65 @@
+body{
+  background:#eee;
+}
+
+h1,
+.match-message{
+  text-align:center;
+  margin-bottom:5px;
+}
+.match-message {
+    font-size: 24px;
+    font-weight: bold;
+    color: #E13300;
+}
+p.info{
+  text-align:center;
+  width:400px;
+  margin:0 auto;
+  font-size:12px;
+  font-weight:bold;
+  color:#666;
+  margin-bottom:20px;
+}
+
+#container{
+  width:640px;  
+  margin:0 auto;
+  padding-top:60px;
+}
+
+#gameboard{
+  width:380px;
+  height:374px;
+  margin:0 auto;
+  background:url("../img/konoha.png") 0 0 no-repeat;
+  position:relative;
+}
+.shuriken{
+  position:absolute;
+  z-index:-1;
+  top:-55px;
+  left:14px;
+  width:46px;
+  height:46px;
+  border-radius:46px;
+  transition:all .3s;
+}
+.shuriken.naruto{
+  background-image: url("../img/naruto1.png");
+}
+
+.shuriken.sasuke{
+  background-image: url('../img/sasuke1.png');
+}    
+#cover {
+   position: absolute;
+   top: 0;
+   left: 0;
+   right: 0;
+   bottom: 0;
+   opacity: 0.80;
+   background: #aaa;
+   z-index: 10;
+   display: none;
+}
