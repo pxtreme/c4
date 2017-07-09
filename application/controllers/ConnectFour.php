@@ -3,7 +3,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class ConnectFour extends CI_Controller {
         function __construct(){
-            $this->GameDataFile = $_SERVER['DOCUMENT_ROOT']."/c4/static/data/GameData.json";
+//            $this->GameDataFile = $_SERVER['DOCUMENT_ROOT']."/c4/static/data/GameData.json";
+            $this->GameDataFile = "https://enigmatic-falls-65825.herokuapp.com/static/data/GameData.json";
             parent::__construct();
         }
 	public function index()
