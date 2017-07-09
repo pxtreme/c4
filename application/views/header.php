@@ -12,4 +12,8 @@
     <body>
         <h1>CONNECT FOUR</h1>
         <div class="match-message"></div>
+        <div id="gamemode">
+            <div id="ai" class="modeselection">Play With AI</div>
+            <div id="human" class="modeselection">Play With Human</div>
+        </div>
         <div id="container">

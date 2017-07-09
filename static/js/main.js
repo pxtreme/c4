@@ -2,28 +2,42 @@
 var id = 1;
 var dojo = new Array();
 var stadium = document.getElementById("gameboard");
-var maxrow = 6;//6
-var maxcol = 6;//7
+var maxrow = 6;
+var maxcol = 6;
 var currRow;
 var currCol;
 var currRow;
 var currNinja;
 
-startbattle();
 setMode();
+    
 function setMode() {
-    $('.test1').on('click', function() {
+    $('.modeselection').on('click', function(d) {
         $.ajax({
-            method: "get",
-            url: 'ConnectFour/UpdateJsonFile/ai',
+            method: "post",
+            url: 'ConnectFour/UpdateJsonFile/'+d.currentTarget.id,
             async: true,
             success: function (data) {
-                console.log(data);
                 data = json_decode(data);
+                $('#gamemode').hide();
+                $('#gameboard').show();
+                startbattle();
             }
         });    
     });
     
+}
+function getMode() {
+    var v = "";
+    $.ajax({
+            method: "get",
+            async: false,
+            url: 'ConnectFour/getJsonFile',
+            success: function (data) {
+                v = data;
+            }
+    });    
+    return v;
 }
 function json_decode(str_json) {
     var json = this.window.JSON;
@@ -66,26 +80,61 @@ function json_decode(str_json) {
 function startbattle(){
     initiateDojo();
 //  placeDisc(Math.floor(Math.random()*2)+1); //this sets random color if player 1 or player 2
-    jutsuNinja(1);
+    if(getMode() === 'ai') {
+        jutsuNinja(Math.floor(Math.random()*2)+1);
+    } else if( getMode() === 'human' ) {
+        jutsuNinja(1);
+    }
 }
 function analyzeWinner(row,col){
-  if(getAdj(row,col,0,1)+getAdj(row,col,0,-1) > 2){console.log(1); //check horizontal
+  if(getAdj(row,col,0,1)+getAdj(row,col,0,-1) > 2){ //check horizontal
     return true; 
   } else {
-    if(getAdj(row,col,1,0) > 2){console.log(2); //checks vertical
+    if(getAdj(row,col,1,0) > 2){ //checks vertical
       return true;
     } else {
-      if(getAdj(row,col,-1,1)+getAdj(row,col,1,-1) > 2){console.log(3);
+      if(getAdj(row,col,-1,1)+getAdj(row,col,1,-1) > 2){
         return true;
       } else {
-        if(getAdj(row,col,1,1)+getAdj(row,col,-1,-1) > 2){console.log(4);
+        if(getAdj(row,col,1,1)+getAdj(row,col,-1,-1) > 2){
           return true;
-        } else {console.log(5);
+        } else {
           return false;
         }
       }
     }
   }
+}
+function ainalyze(){
+  var possibleMoves = colAvail();
+  var aiMoves = new Array();
+  var blocked;
+  var bestBlocked = 0;
+  
+  for(var i=0; i<possibleMoves.length; i++){
+    for(var j=0; j<maxrow; j++){
+      if(dojo[j][possibleMoves[i]] !== 0){
+        break;
+      }
+    }
+    
+    dojo[j-1][possibleMoves[i]] = 1;
+    blocked = getAdj(j-1,possibleMoves[i],0,1)+getAdj(j-1,possibleMoves[i],0,-1);
+    blocked = Math.max(blocked,getAdj(j-1,possibleMoves[i],1,0));
+    blocked = Math.max(blocked,getAdj(j-1,possibleMoves[i],-1,1));
+    blocked = Math.max(blocked,getAdj(j-1,possibleMoves[i],1,1)+getAdj(j-1, possibleMoves[i],-1,-1));
+    
+    if(blocked >= bestBlocked){
+      if(blocked>bestBlocked){
+        bestBlocked = blocked;
+        aiMoves = new Array();
+      }
+      aiMoves.push(possibleMoves[i]);
+    }
+    dojo[j-1][possibleMoves[i]] = 0;
+  }
+  
+  return aiMoves;
 }
 function getAdj(row,col,row_inc,col_inc){
   if(cellVal(row,col) == cellVal(row+row_inc,col+col_inc)){
@@ -102,7 +151,7 @@ function cellVal(row,col){
 }
 
 function firstFreeRow(col,player){
-  for(var i = 0; i<maxrow; i++){
+  for(var i = 0; i<6; i++){
     if(dojo[i][col]!=0){
       break;
     }
@@ -113,7 +162,7 @@ function firstFreeRow(col,player){
 
 function colAvail(){
   var moves_array = new Array();
-  for(var i=0; i<maxcol; i++){
+  for(var i=0; i<6; i++){
     if(dojo[0][i] == 0){
       moves_array.push(i);
     }
@@ -121,8 +170,7 @@ function colAvail(){
   return moves_array;
 }
 
-function Disc(player){
-//    console.log(player);
+function Kunai(player){
   this.player = player;
   this.color = player === 1 ? 'naruto' : 'sasuke';
   this.id = id.toString();
@@ -130,17 +178,25 @@ function Disc(player){
   
   this.appendToBattle = function(){
     stadium.innerHTML += '<div id="n'+this.id+'" class="shuriken '+this.color+'"></div>';
+    
+    if(getMode()=='ai'){
+      if(currNinja == 2) {
+         var possibleMoves = ainalyze();
+        var cpuMove = Math.floor( Math.random() * possibleMoves.length);
+        currCol = possibleMoves[cpuMove];
+        $('#n'+$this.id).prop('style').left = (14+60*currCol)+"px";
+        commenceMove(this.id,currNinja); 
+      }
+    }
   }
   
   var $this = this;
   document.onmousemove = function(evt){
-    //if(currentPlayer == 1){
     currCol = Math.floor((evt.clientX - stadium.offsetLeft)/60);
     if(currCol<0){currCol=0;}
     if(currCol>maxrow){currCol=6;}
     $('#n'+$this.id).prop('style').left = (14+60*currCol)+"px";
     $('#n'+$this.id).prop('style').top = "-55px";
-   // }
   }
   document.onload = function(evt){
     currCol = Math.floor((evt.clientX - stadium.offsetLeft)/60);
@@ -169,7 +225,7 @@ function analyzeBattle(){
   if($('.shuriken').length === maxrow*maxcol) {
         alert('Match Draw!');
         stadium.innerHTML = "";
-        return startbattle();
+        location.reload();
     }      
     jutsuNinja(3-currNinja);
   } else {
@@ -177,7 +233,7 @@ function analyzeBattle(){
     jutsuNinja(3-currNinja);
     alert("Victory " + ninjaname);
     stadium.innerHTML = "";
-    startbattle();
+    location.reload();
   }
 }
 function insertToBattle() {
@@ -185,7 +241,7 @@ function insertToBattle() {
 }
 function jutsuNinja(ninja){
   currNinja = ninja;
-  var shuriken = new Disc(ninja);
+  var shuriken = new Kunai(ninja);
   shuriken.appendToBattle();
 }
 

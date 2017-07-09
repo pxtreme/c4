@@ -1,27 +1,30 @@
 body{
-  background:#eee;
+  background:#000000;
 }
 
 h1,
 .match-message{
   text-align:center;
   margin-bottom:5px;
+  color: #dfe082;
 }
 .match-message {
     font-size: 24px;
     font-weight: bold;
     color: #E13300;
 }
-p.info{
-  text-align:center;
-  width:400px;
-  margin:0 auto;
-  font-size:12px;
-  font-weight:bold;
-  color:#666;
-  margin-bottom:20px;
+#gamemode {
+    text-align:center;
+    margin:0 auto;
+    width:400px;
 }
-
+#gamemode .modeselection {
+    cursor: pointer;
+    color: blue;
+}
+#gamemode .modeselection:hover {
+    color: #E13300;
+}
 #container{
   width:640px;  
   margin:0 auto;
