@@ -12,18 +12,25 @@ var currNinja;
 setMode();
     
 function setMode() {
+    setCookie('mode','');
     $('.modeselection').on('click', function(d) {
-        $.ajax({
-            method: "post",
-            url: 'ConnectFour/UpdateJsonFile/'+d.currentTarget.id,
-            async: true,
-            success: function (data) {
-                data = json_decode(data);
-                $('#gamemode').hide();
-                $('#gameboard').show();
-                startbattle();
-            }
-        });    
+        /*rewriting ajax since writing json file in heroku has limit*/
+        //$.ajax({
+        //    method: "post",
+        //    url: 'ConnectFour/UpdateJsonFile/'+d.currentTarget.id,
+        //    async: true,
+        //    success: function (data) {
+        //        data = json_decode(data);
+        //        $('#gamemode').hide();
+        //        $('#gameboard').show();
+        //        startbattle();
+        //    }
+        //});  
+            setCookie('mode',d.currentTarget.id);
+            console.log(getCookie('mode'));
+            $('#gamemode').hide();
+            $('#gameboard').show();
+            startbattle();
     });
     
 }
@@ -38,6 +45,16 @@ function getMode() {
             }
     });    
     return v;
+}
+function setCookie(key, value) {
+    var expires = new Date();
+    expires.setTime(expires.getTime() + (1 * 24 * 60 * 60 * 1000));
+    document.cookie = key + '=' + value + ';expires=' + expires.toUTCString();
+}
+
+function getCookie(key) {
+    var keyValue = document.cookie.match('(^|;) ?' + key + '=([^;]*)(;|$)');
+    return keyValue ? keyValue[2] : null;
 }
 function json_decode(str_json) {
     var json = this.window.JSON;
@@ -79,10 +96,9 @@ function json_decode(str_json) {
 }
 function startbattle(){
     initiateDojo();
-//  placeDisc(Math.floor(Math.random()*2)+1); //this sets random color if player 1 or player 2
-    if(getMode() === 'ai') {
+    if(getCookie('mode') === 'ai') {
         jutsuNinja(Math.floor(Math.random()*2)+1);
-    } else if( getMode() === 'human' ) {
+    } else if( getCookie('mode') === 'human' ) {
         jutsuNinja(1);
     }
 }
@@ -179,7 +195,7 @@ function Kunai(player){
   this.appendToBattle = function(){
     stadium.innerHTML += '<div id="n'+this.id+'" class="shuriken '+this.color+'"></div>';
     
-    if(getMode()=='ai'){
+    if(getCookie('mode')=='ai'){
       if(currNinja == 2) {
          var possibleMoves = ainalyze();
         var cpuMove = Math.floor( Math.random() * possibleMoves.length);
