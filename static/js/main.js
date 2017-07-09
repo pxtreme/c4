@@ -1,4 +1,4 @@
-(function($){
+(function(j$){
 var id = 1;
 var dojo = new Array();
 var stadium = document.getElementById("gameboard");
