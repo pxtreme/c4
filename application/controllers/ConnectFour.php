@@ -7,7 +7,7 @@ class ConnectFour extends CI_Controller {
 //        var $boardColumn = 4;
 //        var $boardRow = 4;
         function __construct(){
-//            $this->GameDataFile = $_SERVER['DOCUMENT_ROOT']."/c4/static/data/GameData.json";
+            $this->GameDataFile = $_SERVER['DOCUMENT_ROOT']."/c4/static/data/GameData.json";
 //            $this->PlayerStatusFile = $_SERVER['DOCUMENT_ROOT']."/c4/static/data/PlayerStatus.json";
             parent::__construct();
         }
@@ -65,4 +65,21 @@ class ConnectFour extends CI_Controller {
 //                var_dump($file);
 //                exit;
 //            }
+        function UpdateJsonFile($mode) {
+            $r_data = array(
+                "Mode" => "$mode"
+            );
+            $filename = $this->GameDataFile;
+            $fp = fopen($filename, 'w');
+            fwrite($fp, json_encode($r_data));
+            fclose($fp);
+            exit;
+        } 
+        function getJsonFile() {
+            $file = file_get_contents($this->GameDataFile);
+            $f = json_decode($file);
+            var_dump($f->Mode);
+            exit;
+        }
+            
 }
